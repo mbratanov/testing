@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{{ title }}</title>
+</head>
+<body>
+<h1>{{ title }}</h1>
+<ul>
+    {% for schedule in object_list %}
+        <li><a href="#" onclick="loadScheduleIntervals({{ schedule.id }})">{{ schedule.name }}</a></li>
+    {% endfor %}
+</ul>
+
+<dialog id="scheduleDialog">
+    <div id="dialogContent">Зареждане...</div>
+    <button onclick="document.getElementById('scheduleDialog').close()">Затвори</button>
+</dialog>
+
+<script>
+    function loadScheduleIntervals(scheduleId) {
+        fetch(`/schedules/${scheduleId}/intervals/`)
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('dialogContent').innerHTML = html;
+                document.getElementById('scheduleDialog').showModal();
+            });
+    }
+
+    function deleteInterval(intervalId, scheduleId) {
+        fetch(`/intervals/${intervalId}/delete/`, {method: 'POST', headers: {'X-CSRFToken': getCSRFToken()}})
+            .then(() => loadScheduleIntervals(scheduleId));
+    }
+
+    function getCSRFToken() {
+        return document.querySelector('[name=csrfmiddlewaretoken]').value;
+    }
+</script>
+
+</body>
+</html>

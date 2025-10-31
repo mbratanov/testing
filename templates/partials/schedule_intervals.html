@@ -1,0 +1,21 @@
+<!-- partials/schedule_intervals.html -->
+<h3>Интервали за: {{ schedule.name }}</h3>
+
+<ul>
+    {% for interval in schedule.intervals.all %}
+        <li>
+            {{ interval.start_date_day }}/{{ interval.start_date_month }}
+            – {{ interval.end_date_day }}/{{ interval.end_date_month }}
+            (Пон-Пет: {{ interval.hours_weekdays }} ч)
+            <button onclick="deleteInterval({{ interval.id }}, {{ schedule.id }})">🗑️</button>
+        </li>
+    {% empty %}
+        <li>Няма интервали.</li>
+    {% endfor %}
+</ul>
+
+<form method="post" action="{% url 'schedule-intervals-fragment' schedule.id %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Добави интервал</button>
+</form>
